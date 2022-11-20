@@ -113,3 +113,47 @@ const secret = "secretCuisine123"; はここで使用するためのものです
 maxAge
 Cookieの有効期限をミリ秒単位で指定します。
 今回は24 * 60 * 60 * 1000 = 86400000 (ミリ秒) = 24時間を指定しています。
+
+### passportを利用した認証を実装しよう
+passportはストラテジーと呼ばれる認証処理を通して認証を行います。
+既存のサービスと連携させた認証も可能で、Twitter認証を実装したい場合はpassport-twitter、Facebook認証を実装したい場合はpassport-facebook等、専用のモジュールが用意されています。
+```
+passport.use(new LocalStrategy({
+    usernameField: "username",
+    passwordField: "password",
+  },function(username, password, done) {
+  }
+));
+```
+上記はストラテジーのテンプレートです。
+
+usernameField: "username",
+passwordField: "password",
+
+これらは、どの値を元に認証を行うかを定義しており、usernameField、passwordFieldには<input>タグのname属性で指定したデータ名が入ります。
+
+passportには、ユーザ情報をセッションに保存するシリアライズ、IDからユーザ情報を特定し、req.userに格納するデシリアライズという機能があります。
+この機能のおかげでユーザ情報の取得が便利になります。
+
+シリアライズ
+```
+passport.serializeUser(function(user, done) {
+  done(null, user.id);
+});
+```
+
+デシリアライズ
+```
+passport.deserializeUser(async function(id, done) {
+  await User.findById(id, function(err, user) {
+    done(err, user);
+  });
+});
+```
+
+https://tyoshikawa1106.hatenablog.com/entry/2016/04/01/091509
+
+https://stackoverflow.com/questions/72375564/typeerror-req-session-regenerate-is-not-a-function-using-passport
+下のバージョンを利用したほうがよいみたい
+npm install passport@0.5
+
