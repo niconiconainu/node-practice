@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset='utf-8'>
+  <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+  <title>
+    <%= title %>
+  </title>
+  <meta name='viewport' content='width=device-width, initial-scale=1'>
+</head>
+
+<body>
+  <%- include('./error_messages'); %>
+    <form action="/signup" method="post">
+      <label>ユーザ名</label>
+      <input required type="text" name="username" />
+      <br>
+      <label>パスワード</label>
+      <input required type="password" name="password" />
+      <br>
+      <label>パスワード再入力</label>
+      <input required type="text" name="repassword" />
+      <br>
+      <input type="submit" value="Sign up" />
+    </form>
+</body>
+
+</html>

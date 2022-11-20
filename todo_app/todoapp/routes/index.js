@@ -1,51 +1,62 @@
-const express = require('express');
-const mysql = require('mysql');
-const knex = require('../db/knex');
-
+const express = require("express");
+const mysql = require("mysql");
+const knex = require("../db/knex");
 
 const connection = mysql.createConnection({
-  host: '127.0.0.1',
-  user: 'root',
-  password: '',
-  database: 'todo_app',
+  host: "127.0.0.1",
+  user: "root",
+  password: "",
+  database: "todo_app",
 });
 
 const router = express.Router();
 
-let todos = [];
+router.get("/", function (req, res, next) {
+  // セッションに保存されているユーザIDを格納する定数(userId)を用意
+  const userId = req.session.userid;
+  const isAuth = Boolean(userId);
+  console.log(`isAuth: ${isAuth}`);
 
-router.get('/', function (req, res, next) {
   knex("tasks")
     .select("*")
     .then(function (results) {
       console.log(results);
-      res.render('index', {
-        title: 'ToDo App',
+      res.render("index", {
+        title: "ToDo App",
         todos: results,
+        isAuth: isAuth,
       });
     })
     .catch(function (err) {
       console.error(err);
-      res.render('index', {
-        title: 'ToDo App',
+      res.render("index", {
+        title: "ToDo App",
+        isAuth: isAuth,
       });
     });
 });
 
-router.post('/', function (req, res, next) {
+router.post("/", function (req, res, next) {
+  const userId = req.session.userid;
+  const isAuth = Boolean(userId);
   const todo = req.body.add;
   knex("tasks")
-    .insert({user_id: 1, content: todo})
+    .insert({ user_id: 1, content: todo })
     .then(function () {
-      res.redirect('/')
+      res.redirect("/");
     })
     .catch(function (err) {
       console.error(err);
-      res.render('index', {
-        title: 'ToDo App',
+      res.render("index", {
+        title: "ToDo App",
+        isAuth: isAuth,
       });
     });
 });
+
+router.use("/signup", require("./signup"));
+router.use("/signin", require("./signin"));
+router.use('/logout', require('./logout'));
 
 module.exports = router;
 
